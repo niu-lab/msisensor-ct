@@ -72,7 +72,6 @@ msisensor-blood msi [options]:
 
 MSI scoring:
 
-for tumor only sequence data:
 
 hg38 bam:
 
@@ -98,7 +97,7 @@ Note: bam index files are needed in the same directory as bam files
 
 ## Output
 
-For tumor only input, the MSI scoreing step produces 3 files:
+The MSI scoreing step produces 3 files:
 
 ```
     output.tumor.prefix
@@ -131,7 +130,7 @@ For tumor only input, the MSI scoreing step produces 3 files:
 
 ## Test sample
 
-We provided one small dataset (tumor only bam file) to test the msi scoring step:
+We provided one small dataset to test the msi scoring step:
 
 ```
     msisensor-blood msi -D -M ./models_hg38 -t ./test/example.tumor.only.hg38.bam -o output.tumor.prefix
