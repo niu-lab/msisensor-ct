@@ -1,7 +1,6 @@
 # MSIsensor-blood
 
-MSIsensor-blood is a novel method based machine learning, which can accurately
-determine the MSI status of cfDNA samples with ultra-low ctDNA content.
+MSIsensor-blood is a novel method based machine learning, which can accurately determine the MSI status of cfDNA samples with ultra-low ctDNA content.
 
 
 
@@ -9,11 +8,11 @@ determine the MSI status of cfDNA samples with ultra-low ctDNA content.
 
 1. **High sensitivity and specificity**
 
-   For detecting MSI status in cfDNA sequencing samples, MSIsensor-blood can obtain high sensitivity and specificity in data with extremely low ctDNA content and sequencing depths.
+   For detecting MSI status in cfDNA samples, MSIsensor-blood can obtain high sensitivity and specificity in data with extremely low ctDNA content and sequencing depths.
 
 2. **A stable threshold**
 
-   According to the robustness test, if a panel contains 30 microsatellites overlapped with 1476 site-classifiers, the AUC for MSI calling can up to 0.99.  Besides, no matter how many sites a panel overlaps with our classifiers,  MSIsensor-blood always shows a stable threshold that MSIscore=20%.
+   According to the robustness test, if a panel contains 30 microsatellites overlapped with our 1476 site-classifiers, the AUC for MSI calling can up to 0.99. Besides, no matter how many sites a panel overlaps with our classifiers, MSIsensor-blood always shows a stable threshold that MSIscore=20%.
 
 3. **Suitable for ultra-low ctDNA frequency** 
 
@@ -85,7 +84,7 @@ hg19 or GRCh37 bam:
     msisensor-blood msi -D -M ./models_hg19_GRCh37 -t ./test/example.cfdna.hg19.bam -o output.prefix
 ```
 
-b37 or humanG1Kv37 bam:
+b37 or HumanG1Kv37 bam:
 
 ```
     msisensor-blood msi -D -M ./models_b37_HumanG1Kv37 -t ./test/example.cfdna.b37.bam -o output.prefix
@@ -156,4 +155,4 @@ For msi score list accompanied with known msi status as input:
 
 ## Contact
 
-If you have any questions, please contact one or more of the following folks: Beifang Niu [bniu@sccas.cn](mailto:bniu@sccas.cn); Xinyin Han [hanxinyin@cnic.cn ](mailto:hanxinyin@cnic.cn); Shuying Zhang zhangshuying@cnic.cn.
+If you have any questions, please contact one or more of the following folks: Beifang Niu [bniu@sccas.cn](mailto:bniu@sccas.cn); Xinyin Han [hanxinyin@cnic.cn](mailto:hanxinyin@cnic.cn); Shuying Zhang [zhangshuying@cnic.cn](mailto:zhangshuying@cnic.cn).
