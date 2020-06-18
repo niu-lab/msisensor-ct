@@ -9,7 +9,7 @@ determine the MSI status of cfDNA samples with ultra-low ctDNA content.
 
 1. **High sensitivity and specificity**
 
-   In detecting MSI status in cfDNA sequencing samples, MSIsensor-blood can obtain high sensitivity and specificity in data with extremely low ctDNA content and sequencing depths.
+   For detecting MSI status in cfDNA sequencing samples, MSIsensor-blood can obtain high sensitivity and specificity in data with extremely low ctDNA content and sequencing depths.
 
 2. **A stable threshold**
 
