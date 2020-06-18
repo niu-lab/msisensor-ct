@@ -76,19 +76,19 @@ MSI scoring:
 hg38 bam:
 
 ```
-    msisensor-blood msi -D -M ./models_hg38 -t ./test/example.tumor.only.hg38.bam -o output.tumor.prefix
+    msisensor-blood msi -D -M ./models_hg38 -t ./test/example.cfdna.hg38.bam -o output.prefix
 ```
 
 hg19 or GRCh37 bam:
 
 ```
-    msisensor-blood msi -D -M ./models_hg19_GRCh37 -t ./test/example.tumor.only.hg19.bam -o output.tumor.prefix
+    msisensor-blood msi -D -M ./models_hg19_GRCh37 -t ./test/example.cfdna.hg19.bam -o output.prefix
 ```
 
 b37 or humanG1Kv37 bam:
 
 ```
-    msisensor-blood msi -D -M ./models_b37_HumanG1Kv37 -t ./test/example.tumor.only.b37.bam -o output.tumor.prefix
+    msisensor-blood msi -D -M ./models_b37_HumanG1Kv37 -t ./test/example.cfdna.b37.bam -o output.prefix
 ```
 
 Note: bam index files are needed in the same directory as bam files
@@ -100,9 +100,9 @@ Note: bam index files are needed in the same directory as bam files
 The MSI scoring step produces 3 files:
 
 ```
-    output.tumor.prefix
-    output.tumor.prefix_dis
-    output.tumor.prefix_somatic
+    output.prefix
+    output.prefix_dis
+    output.prefix_somatic
 ```
 
 1. output.prefix: msi score output
@@ -133,9 +133,9 @@ The MSI scoring step produces 3 files:
 We provided one small dataset to test the msi scoring step:
 
 ```
-    msisensor-blood msi -D -M ./models_hg38 -t ./test/example.tumor.only.hg38.bam -o output.tumor.prefix
-    msisensor-blood msi -D -M ./models_hg19_GRCh37 -t ./test/example.tumor.only.hg19.bam -o output.tumor.prefix
-    msisensor-blood msi -D -M ./models_b37_HumanG1Kv37 -t ./test/example.tumor.only.b37.bam -o output.tumor.prefix
+    msisensor-blood msi -D -M ./models_hg38 -t ./test/example.cfdna.hg38.bam -o output.prefix
+    msisensor-blood msi -D -M ./models_hg19_GRCh37 -t ./test/example.cfdna.hg19.bam -o output.prefix
+    msisensor-blood msi -D -M ./models_b37_HumanG1Kv37 -t ./test/example.cfdna.b37.bam -o output.prefix
 ```
 
 We also provided a R script to visualize MSI score distribution of MSIsensor-blood output. ( msi score list only or msi score list accompanied with known msi status). 
