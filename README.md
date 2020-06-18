@@ -97,7 +97,7 @@ Note: bam index files are needed in the same directory as bam files
 
 ## Output
 
-The MSI scoreing step produces 3 files:
+The MSI scoring step produces 3 files:
 
 ```
     output.tumor.prefix
