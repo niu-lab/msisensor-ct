@@ -1,6 +1,6 @@
 # MSIsensor-ct
 
-MSIsensor-ct is a novel method based machine learning, which can accurately determine the MSI status of cfDNA samples with ultra-low ctDNA content.
+MSIsensor-ct is a novel method based machine learning, which can accurately determine the MSI status of cfDNA sequencing data with ultra-low ctDNA content.
 
 
 
@@ -8,19 +8,19 @@ MSIsensor-ct is a novel method based machine learning, which can accurately dete
 
 1. **High sensitivity and specificity**
 
-   For detecting MSI status in cfDNA samples, MSIsensor-ct can obtain high sensitivity and specificity in data with extremely low ctDNA content and sequencing depths.
+   For detecting MSI status in cfDNA sequencing data, MSIsensor-ct obtained high sensitivity and specificity in our genuine samples and simulation datasets.
 
 2. **A stable threshold**
 
-   According to the robustness test, if a panel contains 30 microsatellites overlapped with our 1476 site-classifiers, the AUC for MSI calling can up to 0.99. Besides, no matter how many sites a panel overlaps with our classifiers, MSIsensor-ct always shows a stable threshold that MSIscore=20%.
+   According to the robustness test, if a panel contains 30 microsatellites overlapped with our 1,476 site-classifiers, the AUC for MSI calling can up to 0.99. Besides, no matter how many sites a panel overlaps with our classifiers, MSIsensor-ct always shows a stable threshold that MSIscore=20%.
 
-3. **Suitable for ultra-low ctDNA frequency** 
+3. **Suitable for extra-low ctDNA frequency** 
 
-   According to the limitation test, MSIsensor-ct can show accurate MSI calling ability on cfDNA samples with sequencing depth of 10,000X and ctDNA content of 0.05%.
+   The limitation test demonstrated that MSIsensor-ct can show accurate MSI calling ability on cfDNA samples with sequencing depth of 10,000X and ctDNA content over 0.05%.
 
 4. **User-friendly installation and operation process** 
 
-   MSIsensor-ct only requires BAM files as input, which is user-friendly and can be flexibly integrated into the routine next generation sequencing (NGS) analysis.
+   MSIsensor-ct only requires BAM files as input and does not rely on additional baseline establishment, which is user-friendly and can be flexibly integrated into the routine next generation sequencing (NGS) analysis.
 
 
 
