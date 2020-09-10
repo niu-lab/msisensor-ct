@@ -1,6 +1,6 @@
-# MSIsensor-blood
+# MSIsensor-ct
 
-MSIsensor-blood is a novel method based machine learning, which can accurately determine the MSI status of cfDNA samples with ultra-low ctDNA content.
+MSIsensor-ct is a novel method based machine learning, which can accurately determine the MSI status of cfDNA samples with ultra-low ctDNA content.
 
 
 
@@ -8,30 +8,30 @@ MSIsensor-blood is a novel method based machine learning, which can accurately d
 
 1. **High sensitivity and specificity**
 
-   For detecting MSI status in cfDNA samples, MSIsensor-blood can obtain high sensitivity and specificity in data with extremely low ctDNA content and sequencing depths.
+   For detecting MSI status in cfDNA samples, MSIsensor-ct can obtain high sensitivity and specificity in data with extremely low ctDNA content and sequencing depths.
 
 2. **A stable threshold**
 
-   According to the robustness test, if a panel contains 30 microsatellites overlapped with our 1476 site-classifiers, the AUC for MSI calling can up to 0.99. Besides, no matter how many sites a panel overlaps with our classifiers, MSIsensor-blood always shows a stable threshold that MSIscore=20%.
+   According to the robustness test, if a panel contains 30 microsatellites overlapped with our 1476 site-classifiers, the AUC for MSI calling can up to 0.99. Besides, no matter how many sites a panel overlaps with our classifiers, MSIsensor-ct always shows a stable threshold that MSIscore=20%.
 
 3. **Suitable for ultra-low ctDNA frequency** 
 
-   According to the limitation test, MSIsensor-blood can show accurate MSI calling ability on cfDNA samples with sequencing depth of 10,000X and ctDNA content of 0.05%.
+   According to the limitation test, MSIsensor-ct can show accurate MSI calling ability on cfDNA samples with sequencing depth of 10,000X and ctDNA content of 0.05%.
 
 4. **User-friendly installation and operation process** 
 
-   MSIsensor-blood only requires BAM files as input, which is user-friendly and can be flexibly integrated into the routine next generation sequencing (NGS) analysis.
+   MSIsensor-ct only requires BAM files as input, which is user-friendly and can be flexibly integrated into the routine next generation sequencing (NGS) analysis.
 
 
 
 ## Install
 
-Currently, MSIsensor-blood is based on Linux system, and we provide binaries only. Please note your GCC version should be at least 5.0.x.
+Currently, MSIsensor-ct is based on Linux system, and we provide binaries only. Please note your GCC version should be at least 5.0.x.
 
 ```
-    git clone https://github.com/niu-lab/msisensor-blood.git
-    cd msisensor-blood
-    chmod +x msisensor-blood
+    git clone https://github.com/niu-lab/msisensor-ct.git
+    cd msisensor-ct
+    chmod +x msisensor-ct
 ```
 
 
@@ -40,7 +40,7 @@ Currently, MSIsensor-blood is based on Linux system, and we provide binaries onl
 
 ```
     Version 0.1
-    Usage:  msisensor-blood <command> [options]
+    Usage:  msisensor-ct <command> [options]
 ```
 
 Key commands:
@@ -49,7 +49,7 @@ Key commands:
     msi            msi scoring
 ```
 
-msisensor-blood msi [options]:
+msisensor-ct msi [options]:
 
 ```
    -D   <boolean>  activate processing for ctDNA samples
@@ -75,19 +75,19 @@ MSI scoring:
 hg38 bam:
 
 ```
-    msisensor-blood msi -D -M ./models_hg38 -t ./test/example.cfdna.hg38.bam -o output.prefix
+    msisensor-ct msi -D -M ./models_hg38 -t ./test/example.cfdna.hg38.bam -o output.prefix
 ```
 
 hg19 or GRCh37 bam:
 
 ```
-    msisensor-blood msi -D -M ./models_hg19_GRCh37 -t ./test/example.cfdna.hg19.bam -o output.prefix
+    msisensor-ct msi -D -M ./models_hg19_GRCh37 -t ./test/example.cfdna.hg19.bam -o output.prefix
 ```
 
 b37 or HumanG1Kv37 bam:
 
 ```
-    msisensor-blood msi -D -M ./models_b37_HumanG1Kv37 -t ./test/example.cfdna.b37.bam -o output.prefix
+    msisensor-ct msi -D -M ./models_b37_HumanG1Kv37 -t ./test/example.cfdna.b37.bam -o output.prefix
 ```
 
 Note: bam index files are needed in the same directory as bam files
@@ -132,12 +132,12 @@ The MSI scoring step produces 3 files:
 We provided one small dataset to test the msi scoring step:
 
 ```
-    msisensor-blood msi -D -M ./models_hg38 -t ./test/example.cfdna.hg38.bam -o output.prefix
-    msisensor-blood msi -D -M ./models_hg19_GRCh37 -t ./test/example.cfdna.hg19.bam -o output.prefix
-    msisensor-blood msi -D -M ./models_b37_HumanG1Kv37 -t ./test/example.cfdna.b37.bam -o output.prefix
+    msisensor-ct msi -D -M ./models_hg38 -t ./test/example.cfdna.hg38.bam -o output.prefix
+    msisensor-ct msi -D -M ./models_hg19_GRCh37 -t ./test/example.cfdna.hg19.bam -o output.prefix
+    msisensor-ct msi -D -M ./models_b37_HumanG1Kv37 -t ./test/example.cfdna.b37.bam -o output.prefix
 ```
 
-We also provided a R script to visualize MSI score distribution of MSIsensor-blood output. ( msi score list only or msi score list accompanied with known msi status). 
+We also provided a R script to visualize MSI score distribution of MSIsensor-ct output. ( msi score list only or msi score list accompanied with known msi status). 
 
 For msi score list only as input:
 
