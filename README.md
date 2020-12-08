@@ -22,7 +22,9 @@ MSIsensor-ct is a novel method based machine learning, which can accurately dete
 
    MSIsensor-ct requires only BAM files as input and is free from additional baseline establishment, which is user-friendly and can be flexibly integrated into the routine next generation sequencing analysis.
 
+## Note
 
+In practice we recommend aiming for a minimum of 30 valid microsatellites to classify the MSI status using MSIsensor-ct. MSIsensor(https://github.com/niu-lab/msisensor) is also a viable option if paired cfDNA and white blood cell sequencing data are available.
 
 ## Install
 
