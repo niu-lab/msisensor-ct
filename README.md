@@ -25,7 +25,7 @@ MSIsensor-ct is a novel method based machine learning, which can accurately dete
 
 ## Note
 
-In practice we recommend aiming for a minimum of 30 valid microsatellites to classify the MSI status using MSIsensor-ct. MSIsensor(https://github.com/niu-lab/msisensor) is also a viable option if paired cfDNA and white blood cell sequencing data are available.
+In practice, we recommend aiming for a minimum of 30 valid microsatellites to classify the MSI status using MSIsensor-ct. MSIsensor(https://github.com/niu-lab/msisensor) is also a viable option if paired cfDNA and white blood cell sequencing data are available.
 
 
 ## Install
