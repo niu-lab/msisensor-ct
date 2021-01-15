@@ -1,6 +1,6 @@
 
 /*
- * structures.h for MSIsensor
+ * structures.h for MSIsensor-ct
  * Copyright (c) 2013 Beifang Niu && Kai Ye WUGSC All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person

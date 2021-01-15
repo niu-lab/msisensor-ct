@@ -576,14 +576,6 @@ void HomoSite::Normalization( unsigned short * tumorDis, unsigned int dispots , 
         
           
               	local_tumorDis[length-1] = 0;
-                cout << "quick" << " " ;
-                cout << length << " ";
-		cout << "/n" << endl;
-		//cout<< "quick" << " ";
-		for(int i=0;i<dispots;i++){
-		cout << local_tumorDis[i] << " ";
-		}
-		cout << "/n" << endl;
         
 		double sum = 0;
 		for (int i = 0; i < dispots; i++){
