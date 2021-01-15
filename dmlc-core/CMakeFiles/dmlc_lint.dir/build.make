@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/zhangsy/copy/msisensor-ct/vendor/xgboost
+CMAKE_SOURCE_DIR = /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/vendor/xgboost
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/zhangsy/copy/msisensor-ct
+CMAKE_BINARY_DIR = /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1
 
 # Utility rule file for dmlc_lint.
 
@@ -54,7 +54,7 @@ CMAKE_BINARY_DIR = /home/zhangsy/copy/msisensor-ct
 include dmlc-core/CMakeFiles/dmlc_lint.dir/progress.make
 
 dmlc-core/CMakeFiles/dmlc_lint:
-	cd /home/zhangsy/copy/msisensor-ct/dmlc-core && /usr/bin/cmake -DMSVC= -DPYTHON_EXECUTABLE= -DPROJECT_SOURCE_DIR=/home/zhangsy/copy/msisensor-ct/vendor/xgboost/dmlc-core -DLINT_DIRS=include src scripts -DPROJECT_NAME=dmlc -P /home/zhangsy/copy/msisensor-ct/vendor/xgboost/dmlc-core/cmake/lint.cmake
+	cd /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/dmlc-core && /usr/bin/cmake -DMSVC= -DPYTHON_EXECUTABLE= -DPROJECT_SOURCE_DIR=/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/vendor/xgboost/dmlc-core -DLINT_DIRS=include src scripts -DPROJECT_NAME=dmlc -P /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/vendor/xgboost/dmlc-core/cmake/lint.cmake
 
 dmlc_lint: dmlc-core/CMakeFiles/dmlc_lint
 dmlc_lint: dmlc-core/CMakeFiles/dmlc_lint.dir/build.make
@@ -67,10 +67,10 @@ dmlc-core/CMakeFiles/dmlc_lint.dir/build: dmlc_lint
 .PHONY : dmlc-core/CMakeFiles/dmlc_lint.dir/build
 
 dmlc-core/CMakeFiles/dmlc_lint.dir/clean:
-	cd /home/zhangsy/copy/msisensor-ct/dmlc-core && $(CMAKE_COMMAND) -P CMakeFiles/dmlc_lint.dir/cmake_clean.cmake
+	cd /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/dmlc-core && $(CMAKE_COMMAND) -P CMakeFiles/dmlc_lint.dir/cmake_clean.cmake
 .PHONY : dmlc-core/CMakeFiles/dmlc_lint.dir/clean
 
 dmlc-core/CMakeFiles/dmlc_lint.dir/depend:
-	cd /home/zhangsy/copy/msisensor-ct && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/zhangsy/copy/msisensor-ct/vendor/xgboost /home/zhangsy/copy/msisensor-ct/vendor/xgboost/dmlc-core /home/zhangsy/copy/msisensor-ct /home/zhangsy/copy/msisensor-ct/dmlc-core /home/zhangsy/copy/msisensor-ct/dmlc-core/CMakeFiles/dmlc_lint.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/vendor/xgboost /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/vendor/xgboost/dmlc-core /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1 /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/dmlc-core /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/dmlc-core/CMakeFiles/dmlc_lint.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : dmlc-core/CMakeFiles/dmlc_lint.dir/depend
 

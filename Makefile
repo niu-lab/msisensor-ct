@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/zhangsy/copy/msisensor-ct/vendor/xgboost
+CMAKE_SOURCE_DIR = /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/vendor/xgboost
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/zhangsy/copy/msisensor-ct
+CMAKE_BINARY_DIR = /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -124,9 +124,9 @@ list_install_components/fast: list_install_components
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zhangsy/copy/msisensor-ct/CMakeFiles /home/zhangsy/copy/msisensor-ct/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zhangsy/copy/msisensor-ct/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

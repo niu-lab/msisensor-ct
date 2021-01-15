@@ -1,0 +1,2 @@
+/usr/bin/ar qc librabit.a  CMakeFiles/rabit.dir/rabit/src/allreduce_base.cc.o CMakeFiles/rabit.dir/rabit/src/allreduce_robust.cc.o CMakeFiles/rabit.dir/rabit/src/engine.cc.o CMakeFiles/rabit.dir/rabit/src/c_api.cc.o
+/usr/bin/ranlib librabit.a

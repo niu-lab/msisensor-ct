@@ -1,0 +1,77 @@
+Determining if the fopen64 exist failed with the following output:
+Change Dir: /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_a91e4/fast"
+make[1]: Entering directory '/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp'
+/usr/bin/make -f CMakeFiles/cmTC_a91e4.dir/build.make CMakeFiles/cmTC_a91e4.dir/build
+make[2]: Entering directory '/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_a91e4.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -fPIE   -o CMakeFiles/cmTC_a91e4.dir/CheckSymbolExists.c.o   -c /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp/CheckSymbolExists.c: In function ‘main’:
+/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp/CheckSymbolExists.c:8:19: error: ‘fopen64’ undeclared (first use in this function)
+   return ((int*)(&fopen64))[argc];
+                   ^
+/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp/CheckSymbolExists.c:8:19: note: each undeclared identifier is reported only once for each function it appears in
+CMakeFiles/cmTC_a91e4.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_a91e4.dir/CheckSymbolExists.c.o' failed
+make[2]: *** [CMakeFiles/cmTC_a91e4.dir/CheckSymbolExists.c.o] Error 1
+make[2]: Leaving directory '/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_a91e4/fast' failed
+make[1]: *** [cmTC_a91e4/fast] Error 2
+make[1]: Leaving directory '/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp'
+
+File /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <stdio.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef fopen64
+  return ((int*)(&fopen64))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the system is big endian passed with the following output:
+Change Dir: /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_42ac3/fast"
+make[1]: Entering directory '/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp'
+/usr/bin/make -f CMakeFiles/cmTC_42ac3.dir/build.make CMakeFiles/cmTC_42ac3.dir/build
+make[2]: Entering directory '/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_42ac3.dir/TestEndianess.c.o
+/usr/bin/cc    -fPIE   -o CMakeFiles/cmTC_42ac3.dir/TestEndianess.c.o   -c /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp/TestEndianess.c
+Linking C executable cmTC_42ac3
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_42ac3.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTC_42ac3.dir/TestEndianess.c.o  -o cmTC_42ac3 -rdynamic 
+make[2]: Leaving directory '/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp'
+make[1]: Leaving directory '/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/CMakeTmp'
+
+TestEndianess.c:
+/* A 16 bit integer is required. */
+typedef unsigned short cmakeint16;
+
+/* On a little endian machine, these 16bit ints will give "THIS IS LITTLE ENDIAN."
+   On a big endian machine the characters will be exchanged pairwise. */
+const cmakeint16 info_little[] =  {0x4854, 0x5349, 0x4920, 0x2053, 0x494c, 0x5454, 0x454c, 0x4520, 0x444e, 0x4149, 0x2e4e, 0x0000};
+
+/* on a big endian machine, these 16bit ints will give "THIS IS BIG ENDIAN."
+   On a little endian machine the characters will be exchanged pairwise. */
+const cmakeint16 info_big[] =     {0x5448, 0x4953, 0x2049, 0x5320, 0x4249, 0x4720, 0x454e, 0x4449, 0x414e, 0x2e2e, 0x0000};
+
+#ifdef __CLASSIC_C__
+int main(argc, argv) int argc; char *argv[];
+#else
+int main(int argc, char *argv[])
+#endif
+{
+  int require = 0;
+  require += info_little[argc];
+  require += info_big[argc];
+  (void)argv;
+  return require;
+}
+
+
