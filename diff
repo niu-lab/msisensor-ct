@@ -1,0 +1,972 @@
+diff --git a/.gitignore b/.gitignore
+old mode 100644
+new mode 100755
+diff --git a/Dockerfile b/Dockerfile
+old mode 100644
+new mode 100755
+diff --git a/LICENSE b/LICENSE
+old mode 100644
+new mode 100755
+diff --git a/README.md b/README.md
+old mode 100644
+new mode 100755
+diff --git a/bampairs.cpp b/bampairs.cpp
+old mode 100644
+new mode 100755
+diff --git a/bampairs.h b/bampairs.h
+old mode 100644
+new mode 100755
+diff --git a/bamreader.cpp b/bamreader.cpp
+old mode 100644
+new mode 100755
+diff --git a/bamreader.h b/bamreader.h
+old mode 100644
+new mode 100755
+diff --git a/bamtumors.cpp b/bamtumors.cpp
+old mode 100644
+new mode 100755
+diff --git a/chi.cpp b/chi.cpp
+old mode 100644
+new mode 100755
+diff --git a/chi.h b/chi.h
+old mode 100644
+new mode 100755
+diff --git a/cmds.cpp b/cmds.cpp
+old mode 100644
+new mode 100755
+diff --git a/cmds.h b/cmds.h
+old mode 100644
+new mode 100755
+diff --git a/distribution.cpp b/distribution.cpp
+old mode 100644
+new mode 100755
+index f871bd5..0fed109
+--- a/distribution.cpp
++++ b/distribution.cpp
+@@ -56,6 +56,7 @@ std::string normalBam;
+ std::string tumorBam;
+ std::string bedFile;
+ std::string disFile;
++std::string modelFile;
+ 
+ std::ifstream finH;
+ std::ifstream finM;
+@@ -70,6 +71,7 @@ void DisUsage(void) {
+         <<"       -d   <string>   homopolymer and microsates file\n"
+         <<"       -n   <string>   normal bam file\n"
+         <<"       -t   <string>   tumor  bam file\n"
++        <<"       -M   <string>   model for test\n"
+         <<"       -o   <string>   output distribution file\n\n"
+ 
+         <<"       -e   <string>   bed file, optional\n"
+@@ -104,6 +106,7 @@ int dGetOptions(int rgc, char *rgv[]) {
+             case 'd': homoFile = rgv[++i]; break;
+             case 'n': normalBam  = rgv[++i]; break;
+             case 't': tumorBam  = rgv[++i]; break;
++            case 'M': modelFile = rgv[++i]; break;
+             case 'o': disFile  = rgv[++i]; break;
+             case 'e': bedFile  = rgv[++i]; break;
+             case 'r': one_region = rgv[++i]; break;
+@@ -187,7 +190,11 @@ int HomoAndMicrosateDisMsi(int argc, char *argv[]) {
+         polyscan.GetHomoDistribution(sample, disFile);
+     }
+     if (normalBam.empty() && !tumorBam.empty()) {
+-        polyscan.GetHomoTumorDistribution(sample, disFile);
++        if (modelFile.empty()) {
++            polyscan.GetHomoTumorDistribution(sample, disFile);
++        } else {
++            polyscan.GetHomoTumorDistribution(sample, disFile, modelFile);
++        }
+     }
+ 
+     std::cout << "\nTotal time consumed:  " << Cal_AllTime() << " secs\n\n";
+diff --git a/distribution.h b/distribution.h
+old mode 100644
+new mode 100755
+diff --git a/homo.cpp b/homo.cpp
+old mode 100644
+new mode 100755
+index 238d5be..9587cfd
+--- a/homo.cpp
++++ b/homo.cpp
+@@ -29,10 +29,16 @@
+ #include <bitset>
+ #include <omp.h>
+ #include <cmath>
++#include <inttypes.h>
++#include <fstream>
+ 
+ #include "homo.h"
+ #include "polyscan.h"
+ #include "somatic.h"
++#include "xgboost/c_api.h"
++#include "Md5.hpp"
++
++using namespace std;
+ 
+ extern Param param;
+ extern Param paramd;
+@@ -55,6 +61,7 @@ HomoSite::HomoSite()
+     , highcut(0)
+     , normalDis(NULL)
+     , tumorDis(NULL)
++    , tumorDisNor(NULL)
+     ////////////
+     , normalCov( 0 )
+     , tumorCov( 0 )
+@@ -143,6 +150,13 @@ void HomoSite::InitialTumorDis() {
+     }
+ }
+ 
++void HomoSite::InitialTumorDisNor() {
++    tumorDisNor = new float [paramd.t_dispots];
++    for (unsigned int n=0; n<paramd.t_dispots; n++) {
++        tumorDisNor[n] = 0.0;
++    }
++}
++
+ // Out distribution
+ void HomoSite::OutputDis() {
+     for (unsigned int j=0; j<polyscan.totalBamPairsNum; j++) {
+@@ -309,7 +323,7 @@ void HomoSite::DisTumorSomatic(Sample &sample) {
+         }
+     }
+ 
+-    if (tumorCov >= paramd.covCutoff){
++    if (tumorCov >= paramd.covCutoff) {
+         withSufCov = true;
+         comentropy = Comentropy( tumorDis[0], paramd.s_dispots);
+     } else {
+@@ -343,6 +357,113 @@ void HomoSite::DisTumorSomatic(Sample &sample) {
+     }
+ }
+ 
++std::string HomoSite::DecIntToHexStr(long long num) {
++    std::string str;
++    long long Temp = num / 16;
++    int left = num % 16;
++    if (Temp > 0)
++        str += DecIntToHexStr(Temp);
++    if (left < 10)
++        str += (left + '0');
++    else
++        str += ('a' + left - 10);
++    return str;
++}
++
++std::string HomoSite::encode(const std::string &fileName) {
++    unsigned char decrypt[16];
++    std::string decryFileName;
++    unsigned char* encrypt = (unsigned char*)fileName.c_str();
++    MD5_CTX md5;
++    MD5Init(&md5);
++    MD5Update(&md5, encrypt, (int)strlen((char *)encrypt));
++    MD5Final(&md5, decrypt);
++    for (int i = 0; i<16; i++){
++        string str = DecIntToHexStr((long long)decrypt[i]);
++        while(str.size() < 2)
++            str = "0" + str;
++        decryFileName += str;
++    }
++    return decryFileName;
++}
++
++void HomoSite::DisTumorFeature(Sample &sample, const std::string &modelPre) {
++    fstream _file;
++    bool reportSomatic;
++    std::string siteLoc;
++    std::string ModelFile;
++    std::string entryFileName;
++    const float *m_TestResults2;
++    reportSomatic = false;
++    tumorCov = 0;
++    sample.numberOftotalSites++;
++    for (unsigned int j=0; j<polyscan.totalBamTumorsNum; j++) {
++        for (unsigned int k=0; k<paramd.s_dispots; k++) {
++            tumorCov  += tumorDis[j][k];
++        }
++    }
++    if (tumorCov >= paramd.covCutoff){
++        withSufCov = true;
++        Normalization( tumorDis[0], paramd.t_dispots);
++        stringstream tmp;
++        tmp<<location;
++        string tmp_string;
++        tmp>>tmp_string;
++        siteLoc = chr + "_" + tmp_string;
++        entryFileName = encode(siteLoc);
++        ModelFile =  modelPre + "/" + entryFileName;
++        _file.open(ModelFile.c_str());
++        if (_file) {
++            sample.numberOfDataPoints++;
++            BoosterHandle handle;
++            XGBoosterCreate(NULL, 0, &handle);
++            int x = XGBoosterLoadModel(handle, ModelFile.c_str());
++            if (x != 0) {
++                cout << "Failed Loading Model" << endl;
++                exit(-1);
++            }
++            DMatrixHandle dHandle;
++            x = XGDMatrixCreateFromMat(tumorDisNor, 1, paramd.t_dispots-1, 0, &dHandle);
++            if (x != 0)
++            {
++                cout << "Failed Creating DMatrix" << endl;
++                exit(-1);
++            }
++            bst_ulong out2;
++            x = XGBoosterPredict(handle, dHandle, 0, 0, &out2, &m_TestResults2);
++            if (x != 0) {
++                cout << "Failed Predicting" << endl;
++                exit(-1);
++            }
++            if(m_TestResults2[0] > 0.3) {
++                reportSomatic = true;
++                sample.numberOfMsiDataPoints ++;
++            }
++            XGBoosterFree(handle);
++        }
++        _file.close();
++        if (reportSomatic) {
++            sample.outputSomatic << chr << "\t"
++                                << location << "\t"
++                                << fbases << "\t"
++                                << length << "\t"
++                                << bases << "\t"
++                                << ebases;
++            sample.outputSomatic << "\t" << std::fixed << m_TestResults2[0];
++            sample.outputSomatic << std::endl;
++            SomaticSite onessite;
++            onessite.chr = chr;
++            onessite.location = location;
++            onessite.length = length;
++            onessite.fbases = fbases;
++            onessite.ebases = ebases;
++            onessite.bases = bases;
++
++            sample.totalSomaticSites.push_back( onessite );
++        }
++    }
++}
++
+ // distance
+ double HomoSite::DistanceBetweenTwo( unsigned short * FirstOriginal, unsigned short * SecondOriginal ) {
+     double SmallDouble = 0.0000000001;
+@@ -436,6 +557,16 @@ double HomoSite::Comentropy( unsigned short * tumorDis, unsigned int dispots ) {
+     return comentropy;
+ }
+ 
++void HomoSite::Normalization( unsigned short * tumorDis, unsigned int dispots ) {
++    double sum = 0;
++    for (int i = 0; i < dispots; i++){
++        sum += tumorDis[i];
++    }
++    for (int j = 0; j < dispots; j++){
++	    tumorDisNor[j] = tumorDis[j]/sum;
++    }
++}
++
+ void HomoSite::ComputeGenotype( unsigned short * NormalReadCount ) {
+     unsigned int Offset, CoverageCutoff, first, second, Sum;
+     Offset = 1; CoverageCutoff = paramd.covCutoff;
+@@ -496,3 +627,11 @@ void HomoSite::ReleaseTumorMemory() {
+     }
+     delete [] tumorDis;
+ }
++
++void HomoSite::ReleaseTumorMemoryNor() {
++    for (unsigned int k=0; k<polyscan.totalBamTumorsNum; k++) {
++        delete []  tumorDis[k]; 
++    }
++    delete [] tumorDis;
++    delete [] tumorDisNor;
++}
+diff --git a/homo.h b/homo.h
+old mode 100644
+new mode 100755
+index 4abbac9..3561315
+--- a/homo.h
++++ b/homo.h
+@@ -73,6 +73,7 @@ public:
+     // distribution
+     unsigned short **normalDis;
+     unsigned short **tumorDis;
++    float *tumorDisNor;
+ 
+     ////// genotyping //////
+     unsigned normalCov;
+@@ -89,22 +90,30 @@ public:
+ 
+     inline void InitType(){ genotype[0] = genotype[1] = -2; };
+ 
++    //decrypt file name
++    std::string encode(const std::string &fileName);
++    std::string DecIntToHexStr(long long num);
++
+     void TransferString();
+     void InitialDis();
+     void InitialTumorDis();
++    void InitialTumorDisNor();
+     void OutputDis();
+     void OutputTumorDis();
+     void ReleaseMemory();
+     void ReleaseTumorMemory();
++    void ReleaseTumorMemoryNor();
+     //void PouroutDis(std::ofstream &fout);
+     void PouroutDis(Sample &sample);
+     void PourTumoroutDis(Sample &sample);
+     void DisGenotyping(Sample &sample);
+     void DisTumorSomatic(Sample &sample);
++    void DisTumorFeature(Sample &sample, const std::string &modelPre);
+     //// genotyping ///
+     void BoolsInitial();
+     double DistanceBetweenTwo( unsigned short * FirstOriginal, unsigned short * SecondOriginal );
+     double Comentropy( unsigned short * tumorDis, unsigned int dispots );
++    void Normalization( unsigned short * tumorDis, unsigned int dispots );
+     void ComputeGenotype( unsigned short * NormalReadCount );
+ 
+     protected:
+diff --git a/makefile b/makefile
+old mode 100644
+new mode 100755
+index 31ccb3f..6aaaf0e
+--- a/makefile
++++ b/makefile
+@@ -1,26 +1,28 @@
+ CXX=g++
+ SAMTOOLS_ROOT=vendor/samtools-0.1.19
++XGBOOST_ROOT=vendor/xgboost
+ 
+-
++STATIC_LIST=vendor/xgboost/lib/libxgboost.a vendor/xgboost/dmlc-core/libdmlc.a vendor/xgboost/rabit/lib/librabit.a
+ CXXFLAGS+=    -O2 -fopenmp
+ LDFLAGS+=    -L${SAMTOOLS_ROOT}
+ LIBS+=    -lm -lbam -lz -lpthread
+-INCLUDES+=    -I${SAMTOOLS_ROOT}
+-SOURCE = cmds scan distribution refseq polyscan param utilities homo window bamreader sample chi somatic
++INCLUDES+=    -I${SAMTOOLS_ROOT} -I${XGBOOST_ROOT}/include -I${XGBOOST_ROOT}/dmlc-core/include -I${XGBOOST_ROOT}/rabit/include
++SOURCE = cmds scan distribution refseq polyscan param utilities homo window bamreader sample chi somatic Md5 
+ OBJS= $(patsubst %,%.o,$(SOURCE))
+ 
+ %.o:%.cpp
+ 	        $(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+ 
+-all: samtools msisensor
+-
+-samtools:
+-	        $(MAKE) -C ${SAMTOOLS_ROOT}
++all: msisensor 
+ 
+-msisensor: $(OBJS)
+-	        $(CXX) $^ $(CXXFLAGS) $(LDFLAGS) $(LIBS) -o $@ 
++msisensor: 
++		$(MAKE) -C ${SAMTOOLS_ROOT}
++		$(MAKE) -C ${XGBOOST_ROOT}
++		$(MAKE) $(OBJS)
++		$(CXX) $(OBJS) $(STATIC_LIST) $(CXXFLAGS) $(LDFLAGS) $(LIBS) $(INCLUDES) -o $@
+ 
+ clean:
+ 	        rm -f *.o msisensor
+-			        $(MAKE) -C ${SAMTOOLS_ROOT} clean
++		$(MAKE) -C ${SAMTOOLS_ROOT} clean
++		$(MAKE) -C ${XGBOOST_ROOT} clean
+ 
+diff --git a/param.cpp b/param.cpp
+old mode 100644
+new mode 100755
+index 7bb7435..eefd938
+--- a/param.cpp
++++ b/param.cpp
+@@ -93,6 +93,7 @@ Param::Param()
+     , HomoOnly(0)
+     , MicrosateOnly(0)
+     , s_dispots(100)
++    , t_dispots(35)
+     , MaxMicrosate(5)
+     , Repeats(3)
+     , numberThreads(1)
+diff --git a/param.h b/param.h
+old mode 100644
+new mode 100755
+index bb4354e..14efacd
+--- a/param.h
++++ b/param.h
+@@ -81,6 +81,7 @@ public:
+     unsigned int numberThreads;
+     // statistic var
+     unsigned int s_dispots; 
++    unsigned int t_dispots;
+     unsigned int PercentPairs;
+     unsigned int PercentPairsNumber;
+     unsigned int HomoCoverage;
+diff --git a/polyscan.cpp b/polyscan.cpp
+old mode 100644
+new mode 100755
+index e375013..ec9eca3
+--- a/polyscan.cpp
++++ b/polyscan.cpp
+@@ -29,6 +29,7 @@
+ #include <bitset>
+ #include <map>
+ #include <omp.h>
++#include <string>
+ 
+ #include "utilities.h"
+ #include "polyscan.h"
+@@ -36,6 +37,8 @@
+ #include "param.h"
+ #include "sample.h"
+ 
++using namespace std;
++
+ extern Param paramd;
+ extern bit8_t alphabet[];
+ extern bit8_t rev_alphabet[];
+@@ -436,4 +439,20 @@ void PolyScan::GetHomoTumorDistribution( Sample &oneSample, const std::string &p
+     oneSample.VerboseInfo();
+ 
+ }
++void PolyScan::GetHomoTumorDistribution( Sample &oneSample, const std::string &prefix, const std::string &prefixM ) {
++    oneSample.iniTumorDisOutput(prefix);
++    std::vector< SPLIT_READ > readsInWindow;
++    for (int i=0; i< totalWindowsNum; i++) {
++        totalWindows[i].InitialTumorDisWNor(); 
++        totalWindows[i].GetTumorDistribution(readsInWindow);
++        totalWindows[i].PourTumoroutDisW(oneSample);
++        totalWindows[i].PouroutTumorFeature(oneSample, prefixM);
++        totalWindows[i].ClearTumorDisNor();
++        readsInWindow.clear();
++        std::cout << "window: " << i << " done...:" <<  totalWindows[i]._chr << ":" << totalWindows[i]._start << "-" << totalWindows[i]._end << std::endl;
++    }
++    oneSample.pourOutMsiScore();
++    oneSample.closeOutStream();
++    oneSample.VerboseInfo();
++}
+ 
+diff --git a/polyscan.h b/polyscan.h
+old mode 100644
+new mode 100755
+index 2e38b7c..2c87395
+--- a/polyscan.h
++++ b/polyscan.h
+@@ -93,6 +93,7 @@ class PolyScan
+         void releaseDistributions(); 
+         void GetHomoDistribution( Sample &oneSample, const std::string &prefix );
+         void GetHomoTumorDistribution( Sample &oneSample, const std::string &prefix );
++        void GetHomoTumorDistribution( Sample &oneSample, const std::string &prefix, const std::string &prefixM);
+ 
+ protected:
+ 
+diff --git a/refseq.cpp b/refseq.cpp
+old mode 100644
+new mode 100755
+diff --git a/refseq.h b/refseq.h
+old mode 100644
+new mode 100755
+diff --git a/sample.cpp b/sample.cpp
+old mode 100644
+new mode 100755
+index ea2e05b..58adabd
+--- a/sample.cpp
++++ b/sample.cpp
+@@ -31,6 +31,7 @@
+ #include <iomanip>
+ 
+ #include "sample.h"
++#include "homo.h"
+ #include "param.h"
+ 
+ extern Param paramd;
+@@ -38,6 +39,7 @@ extern Param paramd;
+ Sample::Sample()
+     : outputPrefix( "test" )
+     , output( NULL )
++    , modelPrefix( "" )
+    //, outputPSomatic( NULL )
+     , outputSomatic( NULL )
+     , outputGermline( NULL )
+@@ -137,6 +139,7 @@ void Sample::calculateFDR() {
+     }
+ }
+ 
++
+ // report somatics && FDR
+ void Sample::pourOutSomaticFDR() {
+     for ( std::vector< SomaticSite >::iterator _it = totalSomaticSites.begin(); _it != totalSomaticSites.end(); ++_it ) {
+diff --git a/sample.h b/sample.h
+old mode 100644
+new mode 100755
+index af672a0..0a6410e
+--- a/sample.h
++++ b/sample.h
+@@ -44,6 +44,7 @@ public:
+     ~Sample();
+ 
+     std::string outputPrefix;
++    std::string modelPrefix;
+ 
+     std::ofstream output;
+     //std::ofstream outputPSomatic;
+diff --git a/scan.cpp b/scan.cpp
+old mode 100644
+new mode 100755
+diff --git a/scan.h b/scan.h
+old mode 100644
+new mode 100755
+diff --git a/somatic.cpp b/somatic.cpp
+old mode 100644
+new mode 100755
+diff --git a/somatic.h b/somatic.h
+old mode 100644
+new mode 100755
+diff --git a/structs.h b/structs.h
+old mode 100644
+new mode 100755
+diff --git a/test/all_CDS_and_ncRNA_24Chroms_Contigs_1BasedStart_2bpFlanks_ForMusic b/test/all_CDS_and_ncRNA_24Chroms_Contigs_1BasedStart_2bpFlanks_ForMusic
+old mode 100644
+new mode 100755
+diff --git a/test/example.bed b/test/example.bed
+old mode 100644
+new mode 100755
+diff --git a/test/example.microsate.sites b/test/example.microsate.sites
+old mode 100644
+new mode 100755
+diff --git a/test/msi_score_and_status_list b/test/msi_score_and_status_list
+old mode 100644
+new mode 100755
+diff --git a/test/msi_score_only_list b/test/msi_score_only_list
+old mode 100644
+new mode 100755
+diff --git a/test/plot.r b/test/plot.r
+old mode 100644
+new mode 100755
+diff --git a/utilities.cpp b/utilities.cpp
+old mode 100644
+new mode 100755
+diff --git a/utilities.h b/utilities.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/.gitignore b/vendor/samtools-0.1.19/.gitignore
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/AUTHORS b/vendor/samtools-0.1.19/AUTHORS
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/COPYING b/vendor/samtools-0.1.19/COPYING
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/ChangeLog.old b/vendor/samtools-0.1.19/ChangeLog.old
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/INSTALL b/vendor/samtools-0.1.19/INSTALL
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/Makefile b/vendor/samtools-0.1.19/Makefile
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/Makefile.mingw b/vendor/samtools-0.1.19/Makefile.mingw
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/NEWS b/vendor/samtools-0.1.19/NEWS
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam.c b/vendor/samtools-0.1.19/bam.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam.h b/vendor/samtools-0.1.19/bam.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam2bcf.c b/vendor/samtools-0.1.19/bam2bcf.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam2bcf.h b/vendor/samtools-0.1.19/bam2bcf.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam2bcf_indel.c b/vendor/samtools-0.1.19/bam2bcf_indel.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam2depth.c b/vendor/samtools-0.1.19/bam2depth.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_aux.c b/vendor/samtools-0.1.19/bam_aux.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_cat.c b/vendor/samtools-0.1.19/bam_cat.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_color.c b/vendor/samtools-0.1.19/bam_color.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_endian.h b/vendor/samtools-0.1.19/bam_endian.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_import.c b/vendor/samtools-0.1.19/bam_import.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_index.c b/vendor/samtools-0.1.19/bam_index.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_lpileup.c b/vendor/samtools-0.1.19/bam_lpileup.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_mate.c b/vendor/samtools-0.1.19/bam_mate.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_md.c b/vendor/samtools-0.1.19/bam_md.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_pileup.c b/vendor/samtools-0.1.19/bam_pileup.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_plcmd.c b/vendor/samtools-0.1.19/bam_plcmd.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_reheader.c b/vendor/samtools-0.1.19/bam_reheader.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_rmdup.c b/vendor/samtools-0.1.19/bam_rmdup.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_rmdupse.c b/vendor/samtools-0.1.19/bam_rmdupse.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_sort.c b/vendor/samtools-0.1.19/bam_sort.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_stat.c b/vendor/samtools-0.1.19/bam_stat.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_tview.c b/vendor/samtools-0.1.19/bam_tview.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_tview.h b/vendor/samtools-0.1.19/bam_tview.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_tview_curses.c b/vendor/samtools-0.1.19/bam_tview_curses.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bam_tview_html.c b/vendor/samtools-0.1.19/bam_tview_html.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bamshuf.c b/vendor/samtools-0.1.19/bamshuf.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bamtk.c b/vendor/samtools-0.1.19/bamtk.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/Makefile b/vendor/samtools-0.1.19/bcftools/Makefile
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/README b/vendor/samtools-0.1.19/bcftools/README
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/bcf.c b/vendor/samtools-0.1.19/bcftools/bcf.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/bcf.h b/vendor/samtools-0.1.19/bcftools/bcf.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/bcf.tex b/vendor/samtools-0.1.19/bcftools/bcf.tex
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/bcf2qcall.c b/vendor/samtools-0.1.19/bcftools/bcf2qcall.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/bcfutils.c b/vendor/samtools-0.1.19/bcftools/bcfutils.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/call1.c b/vendor/samtools-0.1.19/bcftools/call1.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/em.c b/vendor/samtools-0.1.19/bcftools/em.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/fet.c b/vendor/samtools-0.1.19/bcftools/fet.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/index.c b/vendor/samtools-0.1.19/bcftools/index.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/kfunc.c b/vendor/samtools-0.1.19/bcftools/kfunc.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/kmin.c b/vendor/samtools-0.1.19/bcftools/kmin.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/kmin.h b/vendor/samtools-0.1.19/bcftools/kmin.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/main.c b/vendor/samtools-0.1.19/bcftools/main.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/mut.c b/vendor/samtools-0.1.19/bcftools/mut.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/prob1.c b/vendor/samtools-0.1.19/bcftools/prob1.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/prob1.h b/vendor/samtools-0.1.19/bcftools/prob1.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bcftools/vcf.c b/vendor/samtools-0.1.19/bcftools/vcf.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bedcov.c b/vendor/samtools-0.1.19/bedcov.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bedidx.c b/vendor/samtools-0.1.19/bedidx.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bgzf.c b/vendor/samtools-0.1.19/bgzf.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bgzf.h b/vendor/samtools-0.1.19/bgzf.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/bgzip.c b/vendor/samtools-0.1.19/bgzip.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/cut_target.c b/vendor/samtools-0.1.19/cut_target.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/errmod.c b/vendor/samtools-0.1.19/errmod.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/errmod.h b/vendor/samtools-0.1.19/errmod.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/examples/00README.txt b/vendor/samtools-0.1.19/examples/00README.txt
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/examples/Makefile b/vendor/samtools-0.1.19/examples/Makefile
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/examples/bam2bed.c b/vendor/samtools-0.1.19/examples/bam2bed.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/examples/calDepth.c b/vendor/samtools-0.1.19/examples/calDepth.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/examples/chk_indel.c b/vendor/samtools-0.1.19/examples/chk_indel.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/examples/ex1.fa b/vendor/samtools-0.1.19/examples/ex1.fa
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/examples/toy.fa b/vendor/samtools-0.1.19/examples/toy.fa
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/examples/toy.sam b/vendor/samtools-0.1.19/examples/toy.sam
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/faidx.c b/vendor/samtools-0.1.19/faidx.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/faidx.h b/vendor/samtools-0.1.19/faidx.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/kaln.c b/vendor/samtools-0.1.19/kaln.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/kaln.h b/vendor/samtools-0.1.19/kaln.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/khash.h b/vendor/samtools-0.1.19/khash.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/klist.h b/vendor/samtools-0.1.19/klist.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/knetfile.c b/vendor/samtools-0.1.19/knetfile.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/knetfile.h b/vendor/samtools-0.1.19/knetfile.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/kprobaln.c b/vendor/samtools-0.1.19/kprobaln.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/kprobaln.h b/vendor/samtools-0.1.19/kprobaln.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/kseq.h b/vendor/samtools-0.1.19/kseq.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/ksort.h b/vendor/samtools-0.1.19/ksort.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/kstring.c b/vendor/samtools-0.1.19/kstring.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/kstring.h b/vendor/samtools-0.1.19/kstring.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/misc/HmmGlocal.java b/vendor/samtools-0.1.19/misc/HmmGlocal.java
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/misc/Makefile b/vendor/samtools-0.1.19/misc/Makefile
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/misc/ace2sam.c b/vendor/samtools-0.1.19/misc/ace2sam.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/misc/bamcheck.c b/vendor/samtools-0.1.19/misc/bamcheck.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/misc/maq2sam.c b/vendor/samtools-0.1.19/misc/maq2sam.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/misc/md5.c b/vendor/samtools-0.1.19/misc/md5.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/misc/md5.h b/vendor/samtools-0.1.19/misc/md5.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/misc/md5fa.c b/vendor/samtools-0.1.19/misc/md5fa.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/misc/wgsim.c b/vendor/samtools-0.1.19/misc/wgsim.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/padding.c b/vendor/samtools-0.1.19/padding.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/phase.c b/vendor/samtools-0.1.19/phase.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/razf.c b/vendor/samtools-0.1.19/razf.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/razf.h b/vendor/samtools-0.1.19/razf.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/razip.c b/vendor/samtools-0.1.19/razip.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/sam.c b/vendor/samtools-0.1.19/sam.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/sam.h b/vendor/samtools-0.1.19/sam.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/sam_header.c b/vendor/samtools-0.1.19/sam_header.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/sam_header.h b/vendor/samtools-0.1.19/sam_header.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/sam_view.c b/vendor/samtools-0.1.19/sam_view.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/sample.c b/vendor/samtools-0.1.19/sample.c
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/sample.h b/vendor/samtools-0.1.19/sample.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/samtools.1 b/vendor/samtools-0.1.19/samtools.1
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/win32/xcurses.h b/vendor/samtools-0.1.19/win32/xcurses.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/win32/zconf.h b/vendor/samtools-0.1.19/win32/zconf.h
+old mode 100644
+new mode 100755
+diff --git a/vendor/samtools-0.1.19/win32/zlib.h b/vendor/samtools-0.1.19/win32/zlib.h
+old mode 100644
+new mode 100755
+diff --git a/window.cpp b/window.cpp
+old mode 100644
+new mode 100755
+index 957b5bd..b8e29b3
+--- a/window.cpp
++++ b/window.cpp
+@@ -71,6 +71,15 @@ void Window::InitialTumorDisW() {
+     }
+ };
+ 
++void Window::InitialTumorDisWNor() {
++    HomoSite *p = NULL;
++    for (unsigned short i=0; i<_siteCount; i++) {
++        p = _startSite + i;
++        p->InitialTumorDis();
++        p->InitialTumorDisNor();
++    }
++};
++
+ void Window::ClearDis() {
+     HomoSite *p = NULL;
+     for (unsigned short i=0; i<_siteCount; i++) {
+@@ -87,6 +96,15 @@ void Window::ClearTumorDis() {
+     }
+ };
+ 
++void Window::ClearTumorDisNor() {
++    HomoSite *p = NULL;
++    for (unsigned short i=0; i<_siteCount; i++) {
++        p = _startSite + i;
++        //p->ReleaseTumorMemory();
++        p->ReleaseTumorMemoryNor();
++    }
++};
++
+ void Window::OutputDisW() {
+     HomoSite *p = NULL;
+     for (unsigned short i=0; i<_siteCount; i++) {
+@@ -127,7 +145,7 @@ void Window::DisGenotypingW(Sample &oneSample) {
+     }
+ };
+ 
+-void Window:: PouroutTumorSomatic(Sample &oneSample) {
++void Window::PouroutTumorSomatic(Sample &oneSample) {
+     HomoSite *p = NULL;
+     for (unsigned short i=0; i<_siteCount; i++){
+         p = _startSite + i;
+@@ -135,6 +153,14 @@ void Window:: PouroutTumorSomatic(Sample &oneSample) {
+     }
+ };
+ 
++void Window::PouroutTumorFeature(Sample &oneSample, const std::string &modelPrefix) {
++    HomoSite *p = NULL;
++    for (unsigned short i=0; i<_siteCount; i++){
++        p = _startSite + i;
++        p->DisTumorFeature(oneSample, modelPrefix);
++    }
++};
++
+ // change start
+ void Window::ChangeStart() {
+     if ((_start - MAX_SPAN_SIZE) < 0) {
+diff --git a/window.h b/window.h
+old mode 100644
+new mode 100755
+index 44442c5..37d82d0
+--- a/window.h
++++ b/window.h
+@@ -50,15 +50,18 @@ public:
+     int _end;
+     unsigned short _siteCount;
+     std::string _chr;
++    std::string modelPrefix;
+     HomoSite *_startSite;
+     HomoSite *_endSite;
+ 
+     void InitialDisW(); 
+     void InitialTumorDisW();
++    void InitialTumorDisWNor();
+     void OutputDisW();
+     void OutputTumorDisW();
+     void ClearDis();
+     void ClearTumorDis();
++    void ClearTumorDisNor();
+     void ChangeStart(); 
+     void GetDistribution(std::vector <SPLIT_READ> &readsInWindow);
+     void GetTumorDistribution(std::vector <SPLIT_READ> &readsInWindow);
+@@ -70,6 +73,7 @@ public:
+     void PourTumoroutDisW(Sample &oneSample);
+     void DisGenotypingW(Sample &oneSample);
+     void PouroutTumorSomatic(Sample &oneSample);
++    void PouroutTumorFeature(Sample &oneSample, const std::string &modelPrefix);
+ 
+ protected:
+     //xxxxxx
