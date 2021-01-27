@@ -6,5 +6,5 @@ CXX_FLAGS =  -fopenmp -D_MWAITXINTRIN_H_INCLUDED -D_FORCE_INLINES -funroll-loops
 
 CXX_DEFINES = -DDMLC_LOG_CUSTOMIZE=1
 
-CXX_INCLUDES = -I/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/vendor/xgboost/include -I/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/vendor/xgboost/dmlc-core/include -I/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/vendor/xgboost/rabit/include 
+CXX_INCLUDES = -I/home/zhangsy/20210127/msisensor-ct/vendor/xgboost/include -I/home/zhangsy/20210127/msisensor-ct/vendor/xgboost/dmlc-core/include -I/home/zhangsy/20210127/msisensor-ct/vendor/xgboost/rabit/include 
 

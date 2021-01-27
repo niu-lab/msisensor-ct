@@ -1,4 +1,4 @@
-# Install script for directory: /home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/vendor/xgboost
+# Install script for directory: /home/zhangsy/20210127/msisensor-ct/vendor/xgboost
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,7 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/dmlc-core/cmake_install.cmake")
+  include("/home/zhangsy/20210127/msisensor-ct/dmlc-core/cmake_install.cmake")
 
 endif()
 
@@ -46,5 +46,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/zhangsy/20210127/msisensor-ct/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

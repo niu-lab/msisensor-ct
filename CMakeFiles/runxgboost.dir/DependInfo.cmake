@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/vendor/xgboost/src/cli_main.cc" "/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/runxgboost.dir/src/cli_main.cc.o"
+  "/home/zhangsy/20210127/msisensor-ct/vendor/xgboost/src/cli_main.cc" "/home/zhangsy/20210127/msisensor-ct/CMakeFiles/runxgboost.dir/src/cli_main.cc.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -22,8 +22,8 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/dmlc-core/CMakeFiles/dmlc.dir/DependInfo.cmake"
-  "/home/zhangsy/download_github_msisensor_20210115/msisensor-ct_v1/CMakeFiles/rabit.dir/DependInfo.cmake"
+  "/home/zhangsy/20210127/msisensor-ct/dmlc-core/CMakeFiles/dmlc.dir/DependInfo.cmake"
+  "/home/zhangsy/20210127/msisensor-ct/CMakeFiles/rabit.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.
