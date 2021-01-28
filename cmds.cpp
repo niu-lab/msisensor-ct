@@ -40,7 +40,7 @@ int usage(void) {
     std::cerr<<"\n\n"
     << "Program: msisensor-ct (homopolymer and miscrosatelite analysis using cfDNA bam files)\n"
     << "Version: "<<VERSION<<"\n"
-    << "Author: Beifang Niu && Kai Ye && Xinyin Han && Shuying Zhang\n\n"
+    << "Author: Xinyin Han && Shuying Zhang && Beifang Niu && Kai Ye\n\n"
     << "Usage:   msisensor-ct <command> [options]\n\n"
     << "Key commands:\n\n"
     << " scan            scan homopolymers and miscrosatelites\n"

@@ -1,22 +1,22 @@
 Determining if the fopen64 exist failed with the following output:
 Change Dir: /home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_19779/fast"
+Run Build Command:"/usr/bin/make" "cmTC_34823/fast"
 make[1]: Entering directory '/home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp'
-/usr/bin/make -f CMakeFiles/cmTC_19779.dir/build.make CMakeFiles/cmTC_19779.dir/build
+/usr/bin/make -f CMakeFiles/cmTC_34823.dir/build.make CMakeFiles/cmTC_34823.dir/build
 make[2]: Entering directory '/home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_19779.dir/CheckSymbolExists.c.o
-/usr/bin/cc    -fPIE   -o CMakeFiles/cmTC_19779.dir/CheckSymbolExists.c.o   -c /home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Building C object CMakeFiles/cmTC_34823.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -fPIE   -o CMakeFiles/cmTC_34823.dir/CheckSymbolExists.c.o   -c /home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp/CheckSymbolExists.c
 /home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp/CheckSymbolExists.c: In function ‘main’:
 /home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp/CheckSymbolExists.c:8:19: error: ‘fopen64’ undeclared (first use in this function)
    return ((int*)(&fopen64))[argc];
                    ^
 /home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp/CheckSymbolExists.c:8:19: note: each undeclared identifier is reported only once for each function it appears in
-CMakeFiles/cmTC_19779.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_19779.dir/CheckSymbolExists.c.o' failed
-make[2]: *** [CMakeFiles/cmTC_19779.dir/CheckSymbolExists.c.o] Error 1
+CMakeFiles/cmTC_34823.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_34823.dir/CheckSymbolExists.c.o' failed
+make[2]: *** [CMakeFiles/cmTC_34823.dir/CheckSymbolExists.c.o] Error 1
 make[2]: Leaving directory '/home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp'
-Makefile:126: recipe for target 'cmTC_19779/fast' failed
-make[1]: *** [cmTC_19779/fast] Error 2
+Makefile:126: recipe for target 'cmTC_34823/fast' failed
+make[1]: *** [cmTC_34823/fast] Error 2
 make[1]: Leaving directory '/home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp'
 
 File /home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
@@ -37,15 +37,15 @@ int main(int argc, char** argv)
 Determining if the system is big endian passed with the following output:
 Change Dir: /home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_c0758/fast"
+Run Build Command:"/usr/bin/make" "cmTC_abab6/fast"
 make[1]: Entering directory '/home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp'
-/usr/bin/make -f CMakeFiles/cmTC_c0758.dir/build.make CMakeFiles/cmTC_c0758.dir/build
+/usr/bin/make -f CMakeFiles/cmTC_abab6.dir/build.make CMakeFiles/cmTC_abab6.dir/build
 make[2]: Entering directory '/home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_c0758.dir/TestEndianess.c.o
-/usr/bin/cc    -fPIE   -o CMakeFiles/cmTC_c0758.dir/TestEndianess.c.o   -c /home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp/TestEndianess.c
-Linking C executable cmTC_c0758
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c0758.dir/link.txt --verbose=1
-/usr/bin/cc       CMakeFiles/cmTC_c0758.dir/TestEndianess.c.o  -o cmTC_c0758 -rdynamic 
+Building C object CMakeFiles/cmTC_abab6.dir/TestEndianess.c.o
+/usr/bin/cc    -fPIE   -o CMakeFiles/cmTC_abab6.dir/TestEndianess.c.o   -c /home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp/TestEndianess.c
+Linking C executable cmTC_abab6
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_abab6.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTC_abab6.dir/TestEndianess.c.o  -o cmTC_abab6 -rdynamic 
 make[2]: Leaving directory '/home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp'
 make[1]: Leaving directory '/home/zhangsy/20210127/msisensor-ct/CMakeFiles/CMakeTmp'
 
