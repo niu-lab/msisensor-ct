@@ -3,7 +3,7 @@
 MSIsensor-ct is a novel method based machine learning, which can accurately determine the MSI status of cfDNA sequencing data with ultra-low ctDNA content. In practice, we recommend aiming for a minimum of 30 valid microsatellites to classify the MSI status using MSIsensor-ct. MSIsensor (https://github.com/niu-lab/msisensor) is a viable option if paired tumor and normal sequencing data are available, and MSIsensor2 (https://github.com/niu-lab/msisensor2) is effective for tumor-only samples.
 
 ## Citation
-Xinyin Han, Shuying Zhang, Daniel Cui Zhou, Dongliang Wang, Xiaoyu He, Danyang Yuan, Ruilin Li, Jiayin He, Xiaohong Duan, Michael C Wendl, Li Ding, Beifang Niu, MSIsensor-ct: microsatellite instability detection using cfDNA sequencing data, Briefings in Bioinformatics, 2021. [PDF](https://academic.oup.com/bib/advance-article/doi/10.1093/bib/bbaa402/6103954?login=true)
+Xinyin Han, Shuying Zhang, Daniel Cui Zhou, Dongliang Wang, Xiaoyu He, Danyang Yuan, Ruilin Li, Jiayin He, Xiaohong Duan, Michael C Wendl, Li Ding, Beifang Niu, MSIsensor-ct: microsatellite instability detection using cfDNA sequencing data, Briefings in Bioinformatics, 2021. [Article](https://academic.oup.com/bib/advance-article/doi/10.1093/bib/bbaa402/6103954?login=true)
 
 
 
