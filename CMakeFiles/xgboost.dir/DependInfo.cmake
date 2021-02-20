@@ -5,8 +5,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/home/zhangsy/20210127/msisensor-ct/dmlc-core/CMakeFiles/dmlc.dir/DependInfo.cmake"
-  "/home/zhangsy/20210127/msisensor-ct/CMakeFiles/rabit.dir/DependInfo.cmake"
+  "/home/zhangsy/20210220/msisensor-ct/dmlc-core/CMakeFiles/dmlc.dir/DependInfo.cmake"
+  "/home/zhangsy/20210220/msisensor-ct/CMakeFiles/rabit.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

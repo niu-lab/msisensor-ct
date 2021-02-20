@@ -1,4 +1,4 @@
-# Install script for directory: /home/zhangsy/20210127/msisensor-ct/vendor/xgboost/dmlc-core
+# Install script for directory: /home/zhangsy/20210220/msisensor-ct/vendor/xgboost/dmlc-core
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -33,14 +33,14 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/zhangsy/20210127/msisensor-ct/dmlc-core/libdmlc.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/home/zhangsy/20210220/msisensor-ct/dmlc-core/libdmlc.a")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/." TYPE DIRECTORY FILES "/home/zhangsy/20210127/msisensor-ct/vendor/xgboost/dmlc-core/include")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/." TYPE DIRECTORY FILES "/home/zhangsy/20210220/msisensor-ct/vendor/xgboost/dmlc-core/include")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/." TYPE DIRECTORY FILES "/home/zhangsy/20210127/msisensor-ct/vendor/xgboost/dmlc-core/doc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/." TYPE DIRECTORY FILES "/home/zhangsy/20210220/msisensor-ct/vendor/xgboost/dmlc-core/doc")
 endif()
 
